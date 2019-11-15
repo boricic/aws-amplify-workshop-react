@@ -394,13 +394,13 @@ const CLIENT_ID = uuid()
 
 // create initial state
 const initialState = {
-  name: '', price: '', symbol: '', pets: []
+  name: '', description: '', age: 0, pets: []
 }
 
 // create reducer to update state
 function reducer(state, action) {
   switch(action.type) {
-    case 'SETCOINS':
+    case 'SETPETS':
       return { ...state, pets: action.pets }
     case 'SETINPUT':
       return { ...state, [action.key]: action.value }
@@ -420,20 +420,20 @@ function App() {
     try {
       const petData = await API.graphql(graphqlOperation(listPets))
       console.log('data from API: ', petData)
-      dispatch({ type: 'SETCOINS', pets: petData.data.listPets.items})
+      dispatch({ type: 'SETPETS', pets: petData.data.listPets.items})
     } catch (err) {
       console.log('error fetching data..', err)
     }
   }
 
   async function createPet() {
-    const { name, price, symbol } = state
-    if (name === '' || price === '' || symbol === '') return
+    const { name, description, age } = state
+    if (name === '' || description === '' || age === 0) return
     const pet = {
-      name, price: parseFloat(price), symbol, clientId: CLIENT_ID
+      name, description, age: parseInt(age)
     }
     const pets = [...state.pets, pet]
-    dispatch({ type: 'SETCOINS', pets })
+    dispatch({ type: 'SETPETS', pets })
     console.log('pet:', pet)
     
     try {
@@ -459,24 +459,24 @@ function App() {
         value={state.name}
       />
       <input
-        name='price'
-        placeholder='price'
+        name='description'
+        placeholder='description'
         onChange={onChange}
-        value={state.price}
+        value={state.description}
       />
       <input
-        name='symbol'
-        placeholder='symbol'
+        name='age'
+        placeholder='age'
         onChange={onChange}
-        value={state.symbol}
+        value={state.age}
       />
       <button onClick={createPet}>Create Pet</button>
       {
-        state.pets.map((c, i) => (
+        state.pets.map((p, i) => (
           <div key={i}>
-            <h2>{c.name}</h2>
-            <h4>{c.symbol}</h4>
-            <p>{c.price}</p>
+            <h2>{p.name}</h2>
+            <h4>{p.age}</h4>
+            <p>{p.description}</p>
           </div>
         ))
       }
@@ -485,44 +485,6 @@ function App() {
 }
 
 export default withAuthenticator(App, { includeGreetings: true })
-```
-
-### GraphQL Subscriptions
-
-Next, let's see how we can create a subscription to subscribe to changes of data in our API.
-
-To do so, we need to define the subscription, listen for the subscription, & update the state whenever a new piece of data comes in through the subscription.
-
-```js
-// import the subscription
-import { onCreatePet } from './graphql/subscriptions'
-
-// update reducer
-function reducer(state, action) {
-  switch(action.type) {
-    case 'SETCOINS':
-      return { ...state, pets: action.pets }
-    case 'SETINPUT':
-      return { ...state, [action.key]: action.value }
-    // new 👇
-    case 'ADDCOIN':
-      return { ...state, pets: [...state.pets, action.pet] }
-    default:
-      return state
-  }
-}
-
-// subscribe in useEffect
-useEffect(() => {
-  const subscription = API.graphql(graphqlOperation(onCreatePet)).subscribe({
-      next: (eventData) => {
-        const pet = eventData.value.data.onCreatePet
-        if (pet.clientId === CLIENT_ID) return
-        dispatch({ type: 'ADDCOIN', pet  })
-      }
-  })
-  return () => subscription.unsubscribe()
-}, [])
 ```
 
 ## Adding Authorization to the GraphQL API
