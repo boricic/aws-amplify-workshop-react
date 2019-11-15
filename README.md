@@ -1,8 +1,15 @@
 # Building Serverless Web Applications with React and AWS Amplify
 
-In this workshop we'll learn how to build cloud-enabled web applications with GraphQL, React, & [AWS Amplify](https://aws-amplify.github.io/).
+In this workshop we'll learn how to build web applications using [AWS Amplify](https://aws-amplify.github.io/) and React.
 
 ![](header.jpg)
+
+### Prerequisites
+
+- AWS account
+- Git
+- Node.js 10 (or later)
+- VS Code IDS (option)
 
 ### Topics we'll be covering:
 
@@ -17,13 +24,6 @@ In this workshop we'll learn how to build cloud-enabled web applications with Gr
 - [Deploying via the Amplify Console](https://github.com/dabit3/aws-amplify-workshop-react#deploying-via-the-amplify-console)
 - [React Native](https://github.com/dabit3/aws-amplify-workshop-react#react-native)
 - [Removing / Deleting Services](https://github.com/dabit3/aws-amplify-workshop-react#removing-services)
-
-<!-- ## Redeeming our AWS Credit   
-1. Visit the [AWS Console](https://console.aws.amazon.com/console).
-2. In the top right corner, click on __My Account__.
-![](dashboard1.jpg)
-3. In the left menu, click __Credits__.
-![](dashboard2.jpg) -->
 
 ## Getting Started - Creating the React Application
 
@@ -49,6 +49,16 @@ cd my-amplify-app
 npm install --save aws-amplify aws-amplify-react uuid
 # or
 yarn add aws-amplify aws-amplify-react uuid
+```
+
+Let's inspect what the command has created for us.
+
+<insert folder structure here>
+
+Try to run the app.
+
+```bash
+npm start
 ```
 
 ## Installing the CLI & Initializing a new AWS Amplify Project
@@ -84,7 +94,7 @@ Here we'll walk through the `amplify configure` setup. Once you've signed in to 
 amplify init
 ```
 
-- Enter a name for the project: __amplifyreactapp__
+- Enter a name for the project: __mypets__
 - Enter a name for the environment: __dev__
 - Choose your default editor: __Visual Studio Code (or your default editor)__   
 - Please choose the type of app that you're building __javascript__   
@@ -96,18 +106,32 @@ amplify init
 - Do you want to use an AWS profile? __Y__
 - Please choose the profile you want to use: __amplify-workshop-user__
 
-Now, the AWS Amplify CLI has iniatilized a new project & you will see a new folder: __amplify__ & a new file called `aws-exports.js` in the __src__ directory. These files hold your project configuration.
+Now, the AWS Amplify CLI has iniatilized a new project, let's review changed and added files. You will see a new folder: __amplify__ & a new file called `aws-exports.js` in the __src__ directory. These files hold your project configuration.
+
+You can run
+
+```bash
+amplify status
+```
+
+to check the current status of our newly created amplify application.
 
 ## Adding Authentication
 
 To add authentication, we can use the following command:
 
-```sh
+```bash
 amplify add auth
 ```
 - Do you want to use default authentication and security configuration?  __Default configuration__
 - How do you want users to be able to sign in when using your Cognito User Pool? __Username__
 - What attributes are required for signing up? __Email__ (keep default)
+
+First, let's check the status of our applicaiton. Run
+
+```bash
+amplify status
+```
 
 Now, we'll run the push command and the cloud resources will be created in our AWS account.
 
@@ -121,7 +145,7 @@ To view the service you can run the `console` command the feature you'd like to 
 amplify console auth
 ```
 
-### Configuring the React applicaion
+### Configuring the React application
 
 Now, our resources are created & we can start using them!
 
@@ -191,89 +215,19 @@ function App() {
 export default App
 ```
 
-### Custom authentication strategies
-
-The `withAuthenticator` component is a really easy way to get up and running with authentication, but in a real-world application we probably want more control over how our form looks & functions.
-
-Let's look at how we might create our own authentication flow.
-
-To get started, we would probably want to create input fields that would hold user input data in the state. For instance when signing up a new user, we would probably need 4 user inputs to capture the user's username, email, password, & phone number.
-
-To do this, we could create some initial state for these values & create an event handler that we could attach to the form inputs:
-
-```js
-// initial state
-import React, { useReducer } from 'react'
-
-// define initial state
-const initialState = {
-  username: '', password: '', email: ''
-}
-
-// create reducer
-function reducer(state, action) {
-  switch(action.type) {
-    case 'SET_INPUT':
-      return { ...state, [action.inputName]: action.inputValue }
-    default:
-      return state
-  }
-}
-
-// useReducer hook creates local state
-const [state, dispatch] = useReducer(reducer, initialState)
-
-// event handler
-function onChange(e) {
-  dispatch({
-    type: 'SET_INPUT',
-    inputName: e.target.name,
-    inputValue: e.target.value
-  })
-}
-
-// example of usage with input
-<input
-  name='username'
-  placeholder='username'
-  value={state.username}
-  onChange={onChange}
-/>
-```
-
-We'd also need to have a method that signed up & signed in users. We can use the Auth class to do this. The Auth class has over 30 methods including things like `signUp`, `signIn`, `confirmSignUp`, `confirmSignIn`, & `forgotPassword`. These functions return a promise so they need to be handled asynchronously.
-
-```js
-// import the Auth component
-import { Auth } from 'aws-amplify'
-
-// Class method to sign up a user
-async function signUp() {
-  const { username, password, email } = state
-  try {
-    await Auth.signUp({ username, password, attributes: { email }})
-    console.log('user successfully signed up!')
-  } catch (err) {
-    console.log('error signing up user...', err)
-  }
-}
-
-<button onClick={signUp}>Sign Up</button>
-```
-
 ## Adding a GraphQL API
 
 To add a GraphQL API, we can use the following command:
 
-```sh
+```bash
 amplify add api
 ```
 
 Answer the following questions
 
 - Please select from one of the above mentioned services __GraphQL__   
-- Provide API name: __CryptoGraphQL__   
-- Choose an authorization type for the API __API key__   
+- Provide API name: __PetsGraphQL__   
+- Choose an authorization type for the API __Cognito__   
 - Do you have an annotated GraphQL schema? __N__   
 - Do you want a guided schema creation? __Y__   
 - What best describes your project: __Single object with fields (e.g. “Todo” with ID, name, description)__   
@@ -282,13 +236,17 @@ Answer the following questions
 > When prompted, update the schema to the following:   
 
 ```graphql
-type Coin @model {
+type Pet @model {
   id: ID!
-  clientId: ID
   name: String!
-  symbol: String!
-  price: Float!
+  description: String!
+  age: Int!
 }
+```
+> Again, let's check our application status:
+
+```bash
+amplify status
 ```
 
 > Next, let's push the configuration to our account:
@@ -305,7 +263,7 @@ amplify push
 
 To view the service you can run the `console` command the feature you'd like to view:
 
-```sh
+```bash
 amplify console api
 ```
 
@@ -313,25 +271,25 @@ amplify console api
 
 In the AWS AppSync console, open your API & then click on Queries.
 
-Execute the following mutation to create a new coin in the API:
+Execute the following mutation to create a new pet in the API:
 
 ```graphql
-mutation createCoin {
-  createCoin(input: {
-    name: "Bitcoin"
-    symbol: "BTC"
-    price: 9000
+mutation createPet {
+  createPet(input: {
+    name: "Rex"
+    description: "Tito's dog"
+    age: 3
   }) {
-    id name symbol price
+    id name description age
   }
 }
 ```
 
-Now, let's query for the coin:
+Now, let's query for the pet:
 
 ```graphql
-query listCoins {
-  listCoins {
+query listPets {
+  listPets {
     items {
       id
       name
@@ -345,8 +303,8 @@ query listCoins {
 We can even add search / filter capabilities when querying:
 
 ```graphql
-query listCoins {
-  listCoins(filter: {
+query listPets {
+  listPets(filter: {
     price: {
       gt: 2000
     }
@@ -354,8 +312,8 @@ query listCoins {
     items {
       id
       name
-      symbol
-      price
+      description
+      age
     }
   }
 }
@@ -380,10 +338,10 @@ import { API, graphqlOperation } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
 
 // import query
-import { listCoins } from './graphql/queries'
+import { listPets } from './graphql/queries'
 
 function App() {
-  const [coins, updateCoins] = useState([])
+  const [pets, updatePets] = useState([])
 
   useEffect(() => {
     getData()
@@ -391,9 +349,9 @@ function App() {
 
   async function getData() {
     try {
-      const coinData = await API.graphql(graphqlOperation(listCoins))
-      console.log('data from API: ', coinData)
-      updateCoins(coinData.data.listCoins.items)
+      const petData = await API.graphql(graphqlOperation(listPets))
+      console.log('data from API: ', petData)
+      updatePets(petData.data.listPets.items)
     } catch (err) {
       console.log('error fetching data..', err)
     }
@@ -402,11 +360,11 @@ function App() {
   return (
     <div>
       {
-        coins.map((c, i) => (
+        pets.map((p, i) => (
           <div key={i}>
-            <h2>{c.name}</h2>
-            <h4>{c.symbol}</h4>
-            <p>{c.price}</p>
+            <h2>{p.name}</h2>
+            <h4>{p.age}</h4>
+            <p>{p.description}</p>
           </div>
         ))
       }
@@ -426,8 +384,8 @@ export default withAuthenticator(App, { includeGreetings: true })
 import React, { useEffect, useReducer } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
-import { listCoins } from './graphql/queries'
-import { createCoin as CreateCoin } from './graphql/mutations'
+import { listPets } from './graphql/queries'
+import { createPet as CreatePet } from './graphql/mutations'
 
 // import uuid to create a unique client ID
 import uuid from 'uuid/v4'
@@ -436,14 +394,14 @@ const CLIENT_ID = uuid()
 
 // create initial state
 const initialState = {
-  name: '', price: '', symbol: '', coins: []
+  name: '', price: '', symbol: '', pets: []
 }
 
 // create reducer to update state
 function reducer(state, action) {
   switch(action.type) {
     case 'SETCOINS':
-      return { ...state, coins: action.coins }
+      return { ...state, pets: action.pets }
     case 'SETINPUT':
       return { ...state, [action.key]: action.value }
     default:
@@ -460,29 +418,29 @@ function App() {
 
   async function getData() {
     try {
-      const coinData = await API.graphql(graphqlOperation(listCoins))
-      console.log('data from API: ', coinData)
-      dispatch({ type: 'SETCOINS', coins: coinData.data.listCoins.items})
+      const petData = await API.graphql(graphqlOperation(listPets))
+      console.log('data from API: ', petData)
+      dispatch({ type: 'SETCOINS', pets: petData.data.listPets.items})
     } catch (err) {
       console.log('error fetching data..', err)
     }
   }
 
-  async function createCoin() {
+  async function createPet() {
     const { name, price, symbol } = state
     if (name === '' || price === '' || symbol === '') return
-    const coin = {
+    const pet = {
       name, price: parseFloat(price), symbol, clientId: CLIENT_ID
     }
-    const coins = [...state.coins, coin]
-    dispatch({ type: 'SETCOINS', coins })
-    console.log('coin:', coin)
+    const pets = [...state.pets, pet]
+    dispatch({ type: 'SETCOINS', pets })
+    console.log('pet:', pet)
     
     try {
-      await API.graphql(graphqlOperation(CreateCoin, { input: coin }))
+      await API.graphql(graphqlOperation(CreatePet, { input: pet }))
       console.log('item created!')
     } catch (err) {
-      console.log('error creating coin...', err)
+      console.log('error creating pet...', err)
     }
   }
 
@@ -512,9 +470,9 @@ function App() {
         onChange={onChange}
         value={state.symbol}
       />
-      <button onClick={createCoin}>Create Coin</button>
+      <button onClick={createPet}>Create Pet</button>
       {
-        state.coins.map((c, i) => (
+        state.pets.map((c, i) => (
           <div key={i}>
             <h2>{c.name}</h2>
             <h4>{c.symbol}</h4>
@@ -537,18 +495,18 @@ To do so, we need to define the subscription, listen for the subscription, & upd
 
 ```js
 // import the subscription
-import { onCreateCoin } from './graphql/subscriptions'
+import { onCreatePet } from './graphql/subscriptions'
 
 // update reducer
 function reducer(state, action) {
   switch(action.type) {
     case 'SETCOINS':
-      return { ...state, coins: action.coins }
+      return { ...state, pets: action.pets }
     case 'SETINPUT':
       return { ...state, [action.key]: action.value }
     // new 👇
     case 'ADDCOIN':
-      return { ...state, coins: [...state.coins, action.coin] }
+      return { ...state, pets: [...state.pets, action.pet] }
     default:
       return state
   }
@@ -556,11 +514,11 @@ function reducer(state, action) {
 
 // subscribe in useEffect
 useEffect(() => {
-  const subscription = API.graphql(graphqlOperation(onCreateCoin)).subscribe({
+  const subscription = API.graphql(graphqlOperation(onCreatePet)).subscribe({
       next: (eventData) => {
-        const coin = eventData.value.data.onCreateCoin
-        if (coin.clientId === CLIENT_ID) return
-        dispatch({ type: 'ADDCOIN', coin  })
+        const pet = eventData.value.data.onCreatePet
+        if (pet.clientId === CLIENT_ID) return
+        dispatch({ type: 'ADDCOIN', pet  })
       }
   })
   return () => subscription.unsubscribe()
@@ -592,7 +550,7 @@ Now, we can only access the API with a logged in user.
 
 Next, let's add a field that can only be accessed by the current user.
 
-To do so, we'll update the schema to add the following new type below the existing Coin type:
+To do so, we'll update the schema to add the following new type below the existing Pet type:
 
 ```graphql
 type Note @model @auth(rules: [{allow: owner}]) {
@@ -715,18 +673,18 @@ app.use(function(req, res, next) {
 // below the last app.use() method, add the following code 👇
 const axios = require('axios')
 
-app.get('/coins', function(req, res) {
-  let apiUrl = `https://api.coinlore.com/api/tickers?start=0&limit=10`
+app.get('/pets', function(req, res) {
+  let apiUrl = `https://api.petlore.com/api/tickers?start=0&limit=10`
 
   console.log(req.query);
   if (req && req.query) {
     const { start = 0, limit = 10 } = req.query
-    apiUrl = `https://api.coinlore.com/api/tickers/?start=${start}&limit=${limit}`
+    apiUrl = `https://api.petlore.com/api/tickers/?start=${start}&limit=${limit}`
   }
   axios.get(apiUrl)
     .then(response => {
       res.json({
-        coins: response.data.data
+        pets: response.data.data
       })
     })
     .catch(err => res.json({ error: err }))
@@ -753,7 +711,7 @@ amplify function invoke cryptofunction
 This will start up the node server. We can then make `curl` requests agains the endpoint:
 
 ```sh
-curl 'localhost:3000/coins?start=0&limit=1'
+curl 'localhost:3000/pets?start=0&limit=1'
 ```
 
 If we'd like to test out the query parameters, we can update the __event.json__ to add the following:
@@ -761,7 +719,7 @@ If we'd like to test out the query parameters, we can update the __event.json__ 
 ```json
 {
     "httpMethod": "GET",
-    "path": "/coins",
+    "path": "/pets",
     "query": {
         "start": "0",
         "limit": "1"
@@ -785,7 +743,7 @@ amplify add api
 
 - Please select from one of the above mentioned services __REST__   
 - Provide a friendly name for your resource that will be used to label this category in the project: __cryptoapi__   
-- Provide a path (e.g., /items) __/coins__   
+- Provide a path (e.g., /items) __/pets__   
 - Choose lambda source __Use a Lambda function already added in the current Amplify project__   
 - Choose the Lambda function to invoke by this path: __cryptofunction__   
 - Restrict API access __Y__
@@ -812,14 +770,14 @@ import { API } from 'aws-amplify'
 import { withAuthenticator } from 'aws-amplify-react'
 
 function App() {
-  const [coins, updateCoins] = useState([])
+  const [pets, updatePets] = useState([])
 
   async function getData() {
     try {
-      // const data = await API.get('cryptoapi', '/coins')
-      const data = await API.get('cryptoapi', '/coins?limit=5&start=100')
+      // const data = await API.get('cryptoapi', '/pets')
+      const data = await API.get('cryptoapi', '/pets?limit=5&start=100')
       console.log('data from Lambda REST API: ', data)
-      updateCoins(data.coins)
+      updatePets(data.pets)
     } catch (err) {
       console.log('error fetching data..', err)
     }
@@ -832,7 +790,7 @@ function App() {
   return (
     <div>
       {
-        coins.map((c, i) => (
+        pets.map((c, i) => (
           <div key={i}>
             <h2>{c.name}</h2>
             <p>{c.price_usd}</p>
@@ -1037,7 +995,7 @@ You can create multiple environments for your application in which to create & t
 
 When you create a new environment from an existing environment, you are given a copy of the entire backend application stack from the original project. When you make changes in the new environment, you are then able to test these new changes in the new environment & merge only the changes that have been made since the new environment was created back into the original environment.
 
-Let's take a look at how to create a new environment. In this new environment, we'll re-configure the GraphQL Schema to have another field for the coin rank.
+Let's take a look at how to create a new environment. In this new environment, we'll re-configure the GraphQL Schema to have another field for the pet rank.
 
 First, we'll initialize a new environment using `amplify env add`:
 
@@ -1064,7 +1022,7 @@ amplify env list
 Now we can update the GraphQL Schema in `amplify/backend/api/CryptoGraphQL/schema.graphql` to the following (adding the `rank` field):
 
 ```graphql
-type Coin {
+type Pet {
 	id: ID!
 	clientId: ID
 	name: String!
