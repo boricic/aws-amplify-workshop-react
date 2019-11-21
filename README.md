@@ -510,21 +510,24 @@ Now, we can only access the API with a logged in user.
 
 ### Adding fine-grained access controls to the GraphQL API
 
-Next, let's add a field that can only be accessed by the current user.
+So far we enabled any logged in user to see any of the pets created. Next, let's make it so that pets can only be accessed by the user who created it.
 
 To do so, we'll update the schema to add the following new type below the existing Pet type:
 
 ```graphql
-type Note @model @auth(rules: [{allow: owner}]) {
+type Pet @model @auth(rules: [{allow: owner}]) {
   id: ID!
-  title: String!
-  description: String
+  name: String!
+  description: String!
+  age: Int!
 }
 ```
 
-Next, we'll deploy the updates to our API:
+Next, we'll check and deploy the updates to our API:
 
 ```sh
+amplify status
+
 amplify push
 ```
 
@@ -533,9 +536,7 @@ amplify push
 
 Now, the operations associated with this field will only be accessible by the creator of the item.
 
-To test it out, try creating a new user & accessing a note from another user.
-
-To test the API out in the AWS AppSync console, it will ask for you to __Login with User Pools__. The form will ask you for a __ClientId__. This __ClientId__ is located in __src/aws-exports.js__ in the `aws_user_pools_web_client_id` field.
+Let's check our lists of pets.
 
 ## Adding a Serverless Function
 
@@ -601,95 +602,6 @@ Done running invoke function.
 _Where is the event data coming from? It is coming from the values located in event.json in the function folder (__amplify/backend/function/basiclambda/src/event.json__). If you update the values here, you can simulate data coming arguments the event._
 
 Feel free to test out the function by updating `event.json` with data of your own.
-
-### Adding a function running an express server
-
-Next, we'll build a function that will be running an [Express](https://expressjs.com/) server inside of it.
-
-This new function will fetch data from a cryptocurrency API & return the values in the response.
-
-To get started, we'll create a new function:
-
-```sh
-amplify add function
-```
-
-> Answer the following questions
-
-- Provide a friendly name for your resource to be used as a label for this category in the project: __cryptofunction__
-- Provide the AWS Lambda function name: __cryptofunction__
-- Choose the function template that you want to use: __Serverless express function (Integration with Amazon API Gateway)__
-- Do you want to access other resources created in this project from your Lambda function? __No__
-- Do you want to edit the local lambda function now? __Y__
-
-> This should open the function package located at __amplify/backend/function/cryptofunction/src/index.js__.
-
-Here, we'll add the following code & save the file:
-
-```js
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-  next()
-});
-// below the last app.use() method, add the following code 👇
-const axios = require('axios')
-
-app.get('/pets', function(req, res) {
-  let apiUrl = `https://api.petlore.com/api/tickers?start=0&limit=10`
-
-  console.log(req.query);
-  if (req && req.query) {
-    const { start = 0, limit = 10 } = req.query
-    apiUrl = `https://api.petlore.com/api/tickers/?start=${start}&limit=${limit}`
-  }
-  axios.get(apiUrl)
-    .then(response => {
-      res.json({
-        pets: response.data.data
-      })
-    })
-    .catch(err => res.json({ error: err }))
-})
-```
-
-Next, we'll install axios in the function package:
-
-```sh
-cd amplify/backend/function/cryptofunction/src
-
-npm install axios
-```
-
-Next, change back into the root directory.
-
-Now we can test this function out:
-
-```sh
-amplify function build
-amplify function invoke cryptofunction
-```
-
-This will start up the node server. We can then make `curl` requests agains the endpoint:
-
-```sh
-curl 'localhost:3000/pets?start=0&limit=1'
-```
-
-If we'd like to test out the query parameters, we can update the __event.json__ to add the following:
-
-```json
-{
-    "httpMethod": "GET",
-    "path": "/pets",
-    "query": {
-        "start": "0",
-        "limit": "1"
-    }
-}
-```
-
-When we invoke the function these query parameters will be passed in & the http request will be made immediately.
 
 ## Adding a REST API
 
