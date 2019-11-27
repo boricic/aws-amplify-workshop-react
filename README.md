@@ -845,33 +845,31 @@ amplify add storage
 
 - Please select from one of the below mentioned services __Content (Images, audio, video, etc.)__
 - Please provide a friendly name for your resource that will be used to label this category in the
- project: __YOURAPINAME__
+ project: __pets__
 - Please provide bucket name: __YOURUNIQUEBUCKETNAME__
 - Who should have access: __Auth users only__
 - What kind of access do you want for Authenticated users __create/update, read, delete__   
 
 
 ```sh
+amplify status
+
 amplify push
 ```
 
 Now, storage is configured & ready to use.
 
-What we've done above is created configured an Amazon S3 bucket that we can now start using for storing items.
+What we've done above is created and configured an Amazon S3 bucket that we can now start using for storing items.
 
-For example, if we wanted to test it out we could store some text in a file like this:
+Here are some examples on how we could interact with storage:
 
 ```js
 import { Storage } from 'aws-amplify'
 
 // create function to work with Storage
 function addToStorage() {
-  await Storage.put('javascript/MyReactComponent.js', `
-    import React from 'react'
-    const App = () => (
-      <p>Hello World</p>
-    )
-    export default App
+  await Storage.put('text/MyPetDiary.txt', `
+    My pet is awesome.
   `)
   console.log('data stored in S3!')
 }
@@ -880,7 +878,7 @@ function addToStorage() {
 <button onClick={addToStorage}>Add To Storage</button>
 ```
 
-This would create a folder called `javascript` in our S3 bucket & store a file called __MyReactComponent.js__ there with the code we specified in the second argument of `Storage.put`.
+This would create a folder called `text` in our S3 bucket & store a file called __MyPetDiary.txt__ there with the code we specified in the second argument of `Storage.put`.
 
 > To view the new bucket that was created in S3, go to the dashboard at [https://console.aws.amazon.com/s3](https://console.aws.amazon.com/s3). Also be sure that your region is set correctly.
 
@@ -888,7 +886,7 @@ If we want to read everything from this folder, we can use `Storage.list`:
 
 ```js
 readFromStorage() {
-  const data = Storage.list('javascript/')
+  const data = Storage.list('text/')
   console.log('data from S3: ', data)
 }
 ```
@@ -897,7 +895,7 @@ If we only want to read the single file, we can use `Storage.get`:
 
 ```js
 readFromStorage() {
-  const data = Storage.get('javascript/MyReactComponent.js')
+  const data = Storage.get('text/MyPetDiary.txt')
   console.log('data from S3: ', data)
 }
 ```
@@ -954,18 +952,25 @@ function App() {
 }
 ```
 
-We can even use the S3Album component, one of a few components in the AWS Amplify React library to create a pre-configured photo picker:
+We will now use the S3Album component, one of a few components in the AWS Amplify React library to create a pre-configured photo picker:
 
 ```js
 import { S3Album, withAuthenticator } from 'aws-amplify-react'
 
-function App() {
-  return (
-    <div className="App">
-      <S3Album path={''} picker />
+// ...
+{
+  state.pets.map((p, i) => (
+    <div key={i}>
+      <h2>{p.name}</h2>
+      <h4>{p.age}</h4>
+      <p>{p.description}</p>
+      <div>
+        <S3Album level="private" path={`/${p.name}`} picker pickerTitle={`Upload ${p.name}'s photos`} />
+      </div>
     </div>
-  );
+  ))
 }
+// ...
 ```
 
 ## Adding Analytics
