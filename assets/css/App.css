@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.create-pet-title {
+  padding-left: 20px;
+}
+.create-pet input,
+.create-pet select,
+.create-pet button {
+    margin-left: 20px;
+}
+.pet {
+    padding: 10px;
+}
+.upload button{
+    width: auto;
+    padding: 10px;
+}
+.disable {
+    display: none;
+}
+
+.pet-tab {
+  margin: 20px;
+  display: inline-block;
+}
+
+.upload div div div {
+  margin: 5px;
+  display: inline-block;
+}
+
+.upload div div div div img {
+  width: 300px; 
+}
