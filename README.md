@@ -330,51 +330,7 @@ To do so, we need to define the query, execute the query, store the data in our 
 
 ### src/App.js
 
-```js
-// src/App.js
-import React, { useEffect, useState } from 'react'
-
-// imports from Amplify library
-import { API, graphqlOperation } from 'aws-amplify'
-import { withAuthenticator } from 'aws-amplify-react'
-
-// import query
-import { listPets } from './graphql/queries'
-
-function App() {
-  const [pets, updatePets] = useState([])
-
-  useEffect(() => {
-    getData()
-  }, [])
-
-  async function getData() {
-    try {
-      const petData = await API.graphql(graphqlOperation(listPets))
-      console.log('data from API: ', petData)
-      updatePets(petData.data.listPets.items)
-    } catch (err) {
-      console.log('error fetching data..', err)
-    }
-  }
-
-  return (
-    <div>
-      {
-        pets.map((p, i) => (
-          <div key={i}>
-            <h2>{p.name}</h2>
-            <h4>{p.age}</h4>
-            <p>{p.breed}</p>
-          </div>
-        ))
-      }
-    </div>
-  )
-}
-
-export default withAuthenticator(App, { includeGreetings: true })
-```
+Get code from [here](assets/js/App-01.js) (`assests/js/App-01.js`) and paste it into `src/App.js`
 
 Run the app with `npm start` and try it out.
 
@@ -382,113 +338,7 @@ Run the app with `npm start` and try it out.
 
  Now, let's look at how we can create mutations. Let's change the component to use a `useReducer` hook.
 
-```js
-// src/App.js
-import React, { useEffect, useReducer } from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
-import { withAuthenticator } from 'aws-amplify-react'
-import { listPets } from './graphql/queries'
-import { createPet as CreatePet } from './graphql/mutations'
-
-// import uuid to create a unique client ID
-import uuid from 'uuid/v4'
-
-const CLIENT_ID = uuid()
-
-// create initial state
-const initialState = {
-  name: '', breed: '', age: 0, pets: []
-}
-
-// create reducer to update state
-function reducer(state, action) {
-  switch(action.type) {
-    case 'SETPETS':
-      return { ...state, pets: action.pets }
-    case 'SETINPUT':
-      return { ...state, [action.key]: action.value }
-    default:
-      return state
-  }
-}
-
-function App() {
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  useEffect(() => {
-    getData()
-  }, [])
-
-  async function getData() {
-    try {
-      const petData = await API.graphql(graphqlOperation(listPets))
-      console.log('data from API: ', petData)
-      dispatch({ type: 'SETPETS', pets: petData.data.listPets.items})
-    } catch (err) {
-      console.log('error fetching data..', err)
-    }
-  }
-
-  async function createPet() {
-    const { name, breed, age } = state
-    if (name === '' || breed === '' || age === 0) return
-    const pet = {
-      name, breed, age: parseInt(age)
-    }
-    const pets = [...state.pets, pet]
-    dispatch({ type: 'SETPETS', pets })
-    console.log('pet:', pet)
-    
-    try {
-      await API.graphql(graphqlOperation(CreatePet, { input: pet }))
-      console.log('item created!')
-    } catch (err) {
-      console.log('error creating pet...', err)
-    }
-  }
-
-  // change state then user types into input
-  function onChange(e) {
-    dispatch({ type: 'SETINPUT', key: e.target.name, value: e.target.value })
-  }
-
-  // add UI with event handlers to manage user input
-  return (
-    <div>
-      <input
-        name='name'
-        placeholder='name'
-        onChange={onChange}
-        value={state.name}
-      />
-      <input
-        name='breed'
-        placeholder='breed'
-        onChange={onChange}
-        value={state.breed}
-      />
-      <input
-        name='age'
-        placeholder='age'
-        onChange={onChange}
-        value={state.age}
-      />
-      <button onClick={createPet}>Create Pet</button>
-      {
-        state.pets.map((p, i) => (
-          <div key={i}>
-            <h2>{p.name}</h2>
-            <h4>{p.age}</h4>
-            <p>{p.breed}</p>
-          </div>
-        ))
-      }
-    </div>
-  )
-}
-
-export default withAuthenticator(App, { includeGreetings: true })
-```
+New `src/App.js` code [here](assets/js/App-02.js) (`assests/js/App-02.js`)
 
 ## Adding Authorization to the GraphQL API
 
@@ -506,7 +356,7 @@ mutation deletePets {
 
 To add authorization to the API, we can re-configure the API to use our cognito identity pool. To do so, we can run `amplify configure api`:
 
-```sh
+```bash
 amplify configure api
 ```
 
@@ -515,7 +365,7 @@ amplify configure api
 
 Next, we'll run `amplify push`:
 
-```sh
+```bash
 amplify push
 ```
 
@@ -573,85 +423,11 @@ amplify add function
 
 > This should open the function package located at __amplify/backend/function/breeds/src/index.js__.
 
-Edit the function to look like this, & then save the file.
-
-```js
-exports.handler = function (event, context) {
-  console.log('event: ', event)
-  const breeds = [
-    "affenpinscher",
-    "african",
-    "airedale",
-    "akita",
-    "appenzeller",
-    "basenji",
-    "beagle",
-    "bluetick",
-    "borzoi",
-    "bouvier",
-    "boxer",
-    "brabancon",
-    "briard",
-    "chihuahua",
-    "chow",
-    "clumber",
-    "cockapoo",
-    "cotondetulear",
-    "dachshund",
-    "dalmatian",
-    "dhole",
-    "dingo",
-    "doberman",
-    "entlebucher",
-    "eskimo",
-    "germanshepherd",
-    "groenendael",
-    "husky",
-    "keeshond",
-    "kelpie",
-    "komondor",
-    "kuvasz",
-    "labrador",
-    "leonberg",
-    "lhasa",
-    "malamute",
-    "malinois",
-    "maltese",
-    "mexicanhairless",
-    "mix",
-    "newfoundland",
-    "otterhound",
-    "papillon",
-    "pekinese",
-    "pembroke",
-    "pitbull",
-    "pomeranian",
-    "pug",
-    "puggle",
-    "pyrenees",
-    "redbone",
-    "rottweiler",
-    "saluki",
-    "samoyed",
-    "schipperke",
-    "shiba",
-    "shihtzu",
-    "stbernard"];
-    
-  const response = {
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*"
-    },
-    body: breeds
-  }
-  context.done(null, response);
-}
-```
+Edit the function to look like [this](assets/js/breeds-lambda.js) (`assets/js/breeds-lambda.js`), and then save the file.
 
 Next, we can test this out by running:
 
-```sh
+```bssh
 amplify function invoke breeds
 ```
 
@@ -661,14 +437,14 @@ Using service: Lambda, provided by: awscloudformation
 
 You'll notice the output from Lambda function in your terminal.
 
-```sh
+```bash
 Running "lambda_invoke:default" (lambda_invoke) task
 
 event:  { key1: 'value1', key2: 'value2', key3: 'value3' }
 
 Success!  Message:
 ------------------
-{"statusCode":200,"body":["affenpinscher","african","airedale","akita","appenzeller","basenji","beagle","bluetick","borzoi","bouvier","boxer","brabancon","briard","chihuahua","chow","clumber","cockapoo","cotondetulear","dachshund","dalmatian","dhole","dingo","doberman","entlebucher","eskimo","germanshepherd","groenendael","husky","keeshond","kelpie","komondor","kuvasz","labrador","leonberg","lhasa","malamute","malinois","maltese","mexicanhairless","mix","newfoundland","otterhound","papillon","pekinese","pembroke","pitbull","pomeranian","pug","puggle","pyrenees","redbone","rottweiler","saluki","samoyed","schipperke","shiba","shihtzu","stbernard"]}
+{"statusCode":200,"body":["affenpinscher","african","airedale","akita","appenzeller","basenji","beagle","bluetick","borzoi","bouvier","boxer","brabancon","briard","chihuahua","chow","clumber","cockapoo","corgi","cotondetulear","dachshund","dalmatian","dhole","dingo","doberman","entlebucher","eskimo","germanshepherd","groenendael","husky","keeshond","kelpie","komondor","kuvasz","labrador","leonberg","lhasa","malamute","malinois","maltese","mexicanhairless","mix","newfoundland","otterhound","papillon","pekinese","pembroke","pitbull","pomeranian","pug","puggle","pyrenees","redbone","rottweiler","saluki","samoyed","schipperke","shiba","shihtzu","stbernard"]}
 
 Done.
 Done running invoke function.
@@ -684,7 +460,7 @@ Now that we've created the cryptocurrency Lambda function let's add an API endpo
 
 To add the REST API, we can use the following command:
 
-```sh
+```bash
 amplify add api
 ```
 
@@ -714,124 +490,9 @@ Now that the API is created we can start sending requests to it & interacting wi
 
 Let's request some data from the API:
 
-```js
-const data = await API.get('breedsapi', '/breeds')
-// src/App.js
-import React, { useEffect, useReducer } from 'react'
-import { API, graphqlOperation } from 'aws-amplify'
-import { withAuthenticator } from 'aws-amplify-react'
-import { listPets } from './graphql/queries'
-import { createPet as CreatePet } from './graphql/mutations'
+Get new `src/App.js` code from [here](assets/js/App-03.js) (`assets/js/App-03.js`).
 
-// import uuid to create a unique client ID
-import uuid from 'uuid/v4'
-
-const CLIENT_ID = uuid()
-
-// create initial state
-const initialState = {
-  name: '', description: '', age: 0, pets: [], breeds: []
-}
-
-// create reducer to update state
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SETPETS':
-      return { ...state, pets: action.pets }
-    case 'SETBREEDS':
-      return { ...state, breeds: action.breeds }
-    case 'SETINPUT':
-      return { ...state, [action.key]: action.value }
-    default:
-      return state
-  }
-}
-
-function App() {
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  useEffect(() => {
-    getData()
-  }, [])
-
-  async function getData() {
-    try {
-      const breedsData = await API.get('breedsapi', '/breeds')
-      console.log('data from REST API: ', breedsData)
-      dispatch({ type: 'SETBREEDS', breeds: breedsData })
-
-      const petData = await API.graphql(graphqlOperation(listPets))
-      console.log('data from GRAPHQL: ', petData)
-      dispatch({ type: 'SETPETS', pets: petData.data.listPets.items })
-    } catch (err) {
-      console.log('error fetching data..', err)
-    }
-  }
-
-  async function createPet() {
-    const { name, description, age } = state
-    if (name === '' || description === '' || age === 0) return
-    const pet = {
-      name, description, age: parseInt(age)
-    }
-    const pets = [...state.pets, pet]
-    dispatch({ type: 'SETPETS', pets })
-    console.log('pet:', pet)
-
-    try {
-      await API.graphql(graphqlOperation(CreatePet, { input: pet }))
-      console.log('item created!')
-    } catch (err) {
-      console.log('error creating pet...', err)
-    }
-  }
-
-  // change state then user types into input
-  function onChange(e) {
-    dispatch({ type: 'SETINPUT', key: e.target.name, value: e.target.value })
-  }
-
-  function makeOption(option) {
-    return <option>{option}</option>
-  }
-
-  // add UI with event handlers to manage user input
-  return (
-    <div>
-      <input
-        name='name'
-        placeholder='name'
-        onChange={onChange}
-        value={state.name}
-      />
-      <select
-        name='description'
-        placeholder='description'
-        onChange={onChange}
-        value={state.description}
-      >{state.breeds.map(makeOption)}</select>
-      <input
-        name='age'
-        placeholder='age'
-        onChange={onChange}
-        value={state.age}
-      />
-      <button onClick={createPet}>Create Pet</button>
-      {
-        state.pets.map((p, i) => (
-          <div key={i}>
-            <h2>{p.name}</h2>
-            <h4>{p.age}</h4>
-            <p>{p.description}</p>
-          </div>
-        ))
-      }
-    </div>
-  )
-}
-
-export default withAuthenticator(App, { includeGreetings: true })
-```
+Let's try it!
 
 ## Working with Storage
 
@@ -973,6 +634,8 @@ import { S3Album, withAuthenticator } from 'aws-amplify-react'
 // ...
 ```
 
+Complete `src/App.js` code is available [here](assets/js/App-04.js) (`assets/js/App-04.js`).
+
 ## Adding Analytics
 
 To add analytics, we can use the following command:
@@ -1033,34 +696,35 @@ First, we'll initialize a new environment using `amplify env add`:
 amplify env add
 
 > Do you want to use an existing environment? No
-> Enter a name for the environment: apiupdate
+> Enter a name for the environment: adddesc
 > Do you want to use an AWS profile? Y
 > Please choose the profile you want to use: amplify-workshop-profile
 ```
 
 Once the new environment is initialized, we should be able to see some information about our environment setup by running:
 
-```sh
+```bash
 amplify env list
 
 | Environments |
 | ------------ |
 | dev          |
-| *apiupdate   |
+| *adddesc   |
 ```
 
 Now we can update the GraphQL Schema in `amplify/backend/api/CryptoGraphQL/schema.graphql` to the following (adding the `rank` field):
 
 ```graphql
-type Pet {
-	id: ID!
-	clientId: ID
-	name: String!
-	symbol: String!
-	price: Float!
-  rank: Int
+type Pet @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  name: String!
+  breed: String!
+  age: Int!
+  description: String!
 }
 ```
+
+And update our `src/App.js` with the code from [here](assets/js/App-05.js) (`assets/js/App-05.js`)
 
 Now, we can create this new stack by running `amplify push`:
 
@@ -1100,10 +764,10 @@ amplify push
 - Do you want to update code for your updated GraphQL API? __Y__
 - Do you want to generate GraphQL statements? __Y__
 
-Now, the changes have been deployed & we can delete the apiupdate environment:
+Now, the changes have been deployed & we can delete the adddesc environment:
 
 ```sh
-amplify env remove apiupdate
+amplify env remove adddesc
 
 Do you also want to remove all the resources of the environment from the cloud? Y
 ```
