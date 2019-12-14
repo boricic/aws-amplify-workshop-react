@@ -66,7 +66,7 @@ exports.handler = function (event, context) {
     headers: {
       "Access-Control-Allow-Origin": "*"
     },
-    body: breeds
+    body: JSON.stringify(breeds)
   }
   context.done(null, response);
 }

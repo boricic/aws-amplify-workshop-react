@@ -13,17 +13,17 @@ In this workshop we'll learn how to build web applications using [AWS Amplify](h
 
 ### Topics we'll be covering:
 
-- [Authentication](https://github.com/dabit3/aws-amplify-workshop-react#adding-authentication)
-- [GraphQL API with AWS AppSync](https://github.com/dabit3/aws-amplify-workshop-react#adding-a-graphql-api)
-- [Adding Authorization to the GraphQL API](https://github.com/dabit3/aws-amplify-workshop-react#adding-authorization-to-the-graphql-api)
-- [Serverless Functions](https://github.com/dabit3/aws-amplify-workshop-react#adding-a-serverless-function)
-- [REST API with a Lambda Function](https://github.com/dabit3/aws-amplify-workshop-react#adding-a-rest-api)
-- [Adding Storage with Amazon S3](https://github.com/dabit3/aws-amplify-workshop-react#working-with-storage)
-- [Analytics](https://github.com/dabit3/aws-amplify-workshop-react#adding-analytics)
-- [Multiple Environments](https://github.com/dabit3/aws-amplify-workshop-react#working-with-multiple-environments)
-- [Deploying via the Amplify Console](https://github.com/dabit3/aws-amplify-workshop-react#deploying-via-the-amplify-console)
-- [React Native](https://github.com/dabit3/aws-amplify-workshop-react#react-native)
-- [Removing / Deleting Services](https://github.com/dabit3/aws-amplify-workshop-react#removing-services)
+- [Authentication](https://github.com/boricic/aws-amplify-workshop-react#adding-authentication)
+- [GraphQL API with AWS AppSync](https://github.com/boricic/aws-amplify-workshop-react#adding-a-graphql-api)
+- [Adding Authorization to the GraphQL API](https://github.com/boricic/aws-amplify-workshop-react#adding-authorization-to-the-graphql-api)
+- [Serverless Functions](https://github.com/boricic/aws-amplify-workshop-react#adding-a-serverless-function)
+- [REST API with a Lambda Function](https://github.com/boricic/aws-amplify-workshop-react#adding-a-rest-api)
+- [Adding Storage with Amazon S3](https://github.com/boricic/aws-amplify-workshop-react#working-with-storage)
+- [Analytics](https://github.com/boricic/aws-amplify-workshop-react#adding-analytics)
+- [Multiple Environments](https://github.com/boricic/aws-amplify-workshop-react#working-with-multiple-environments)
+- [Deploying via the Amplify Console](https://github.com/boricic/aws-amplify-workshop-react#deploying-via-the-amplify-console)
+- [React Native](https://github.com/boricic/aws-amplify-workshop-react#react-native)
+- [Removing / Deleting Services](https://github.com/boricic/aws-amplify-workshop-react#removing-services)
 
 ## Getting Started - Creating the React Application
 
@@ -33,27 +33,25 @@ If you already have this installed, skip to the next step. If not, either instal
 
 ```bash
 npm install -g create-react-app
-create-react-app my-amplify-app
+create-react-app pets
 ```
 
 Or use npx (npm 5.2 & later) to create a new app:
 
 ```bash
-npx create-react-app my-amplify-app
+npx create-react-app pets
 ```
 
 Now change into the new app directory & install the AWS Amplify & AWS Amplify React libraries:
 
 ```bash
-cd my-amplify-app
-npm install --save aws-amplify aws-amplify-react uuid
+cd pets
+npm install --save aws-amplify aws-amplify-react
 # or
-yarn add aws-amplify aws-amplify-react uuid
+yarn add aws-amplify aws-amplify-react
 ```
 
 Let's inspect what the command has created for us.
-
-<insert folder structure here>
 
 Try to run the app.
 
@@ -94,7 +92,7 @@ Here we'll walk through the `amplify configure` setup. Once you've signed in to 
 amplify init
 ```
 
-- Enter a name for the project: __mypets__
+- Enter a name for the project: __pets__
 - Enter a name for the environment: __dev__
 - Choose your default editor: __Visual Studio Code (or your default editor)__   
 - Please choose the type of app that you're building __javascript__   

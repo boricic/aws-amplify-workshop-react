@@ -1,4 +1,3 @@
-const data = await API.get('breedsapi', '/breeds')
 // src/App.js
 import React, { useEffect, useReducer } from 'react'
 import { API, graphqlOperation } from 'aws-amplify'
