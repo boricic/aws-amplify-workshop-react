@@ -773,6 +773,10 @@ Now, we should be able to run the `list` command & see only our main environment
 amplify env list
 ```
 
+## Amplify Datastore
+
+(re:Invent 2019 launch)[https://aws.amazon.com/blogs/aws/amplify-datastore-simplify-development-of-offline-apps-with-graphql/]
+
 ## Deploying via the Amplify Console
 
 For hosting, we can use the [Amplify Console](https://aws.amazon.com/amplify/console/) to deploy the application.
