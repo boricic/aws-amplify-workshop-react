@@ -15,7 +15,7 @@ In this workshop we'll learn how to build web applications using [AWS Amplify](h
 
 - [Official Framework Page](https://aws-amplify.github.io/)
 - [Amplify Community](https://amplify.aws/community/)
--  
+- [17 Data Access Patterns](https://dev.to/dabit3/data-modeling-in-depth-with-graphql-aws-amplify-17-data-access-patterns-4meh)
 
 ### Topics we'll be covering:
 
@@ -460,7 +460,7 @@ Feel free to test out the function by updating `event.json` with data of your ow
 
 ## Adding a REST API
 
-Now that we've created the cryptocurrency Lambda function let's add an API endpoint so we can invoke it via http.
+Now that we've created the a Lambda function let's add an API endpoint so we can invoke it via http.
 
 To add the REST API, we can use the following command:
 
@@ -748,16 +748,7 @@ Next, run the `status` command:
 amplify status
 ```
 
-You should now see an __Update__ operation:
-
-```sh
-Current Environment: local
-
-| Category | Resource name   | Operation | Provider plugin   |
-| -------- | --------------- | --------- | ----------------- |
-| Api      | CryptoGraphQL   | Update    | awscloudformation |
-| Auth     | cognito75a8ccb4 | No Change | awscloudformation |
-```
+You should now see an __Update__ operation.
 
 To deploy the changes, run the push command:
 
