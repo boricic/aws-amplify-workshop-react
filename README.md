@@ -9,13 +9,15 @@ In this workshop we'll learn how to build web applications using [AWS Amplify](h
 - AWS account
 - Git on your computer & Github account
 - Node.js 8 (or later) [download here](https://nodejs.org/en/download/)
-- VS Code IDE (optional) [download here] (https://code.visualstudio.com/Download)
+- VS Code IDE (optional) [download here](https://code.visualstudio.com/Download)
 
 ### Usefull links
 
 - [Official Framework Page](https://aws-amplify.github.io/)
 - [Amplify Community](https://amplify.aws/community/)
 - [17 Data Access Patterns](https://dev.to/dabit3/data-modeling-in-depth-with-graphql-aws-amplify-17-data-access-patterns-4meh)
+- [Presentation](https://docs.google.com/presentation/d/166jlS1FoFUdXOuoyfg93-PC5cVn1XUHPCyJu7CfaOpE/edit?usp=sharing)
+- [Questions](https://forms.gle/MfsojKV3rwYBkVD97)
 
 ### Topics we'll be covering:
 
