@@ -8,8 +8,14 @@ In this workshop we'll learn how to build web applications using [AWS Amplify](h
 
 - AWS account
 - Git on your computer & Github account
-- Node.js 8 (or later)
-- VS Code IDE (optional)
+- Node.js 8 (or later) [download here](https://nodejs.org/en/download/)
+- VS Code IDE (optional) [download here] (https://code.visualstudio.com/Download)
+
+### Usefull links
+
+- [Official Framework Page](https://aws-amplify.github.io/)
+- [Amplify Community](https://amplify.aws/community/)
+-  
 
 ### Topics we'll be covering:
 
