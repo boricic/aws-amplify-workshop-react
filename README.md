@@ -360,25 +360,6 @@ mutation deletePets {
 }
 ```
 
-To add authorization to the API, we can re-configure the API to use our cognito identity pool. To do so, we can run `amplify configure api`:
-
-```bash
-amplify configure api
-```
-
-- Please select from one of the below mentioned services: __GraphQL__
-- Choose an authorization type for the API: __Amazon Cognito User Pool__
-
-Next, we'll run `amplify push`:
-
-```bash
-amplify push
-```
-
-- Do you want to update code for your updated GraphQL API __N__
-
-Now, we can only access the API with a logged in user.
-
 ### Adding fine-grained access controls to the GraphQL API
 
 So far we enabled any logged in user to see any of the pets created. Next, let's make it so that pets can only be accessed by the user who created it.
@@ -459,6 +440,12 @@ Done running invoke function.
 _Where is the event data coming from? It is coming from the values located in event.json in the function folder (__amplify/backend/function/basiclambda/src/event.json__). If you update the values here, you can simulate data coming arguments the event._
 
 Feel free to test out the function by updating `event.json` with data of your own.
+
+Now let's push the function to the cloud:
+
+```bash
+amplify push
+```
 
 ## Adding a REST API
 
