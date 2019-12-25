@@ -1,3 +1,5 @@
+Notice: As an inspiration and starting point I have used [Nader Dabit's Amplify React Workshop](https://github.com/dabit3/aws-amplify-workshop-react).
+
 # Building Serverless Web Applications with React and AWS Amplify
 
 In this workshop we'll learn how to build web applications using [AWS Amplify](https://aws-amplify.github.io/) and React.
